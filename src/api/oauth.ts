@@ -13,6 +13,7 @@ const SCOPES = [
   'listings_r',
   'listings_w',
   'shops_r',
+  'shops_w',
   'profile_r',
   'address_r',
   'email_r',
@@ -116,7 +117,13 @@ export class OAuthClient {
       code,
       code_verifier: codeVerifier,
     });
-    return res.data;
+    const data = res.data;
+    // Etsy sometimes omits user_id from the token response; it's always the numeric prefix of the access_token
+    if (!data.user_id) {
+      const match = data.access_token.match(/^(\d+)\./);
+      if (match) data.user_id = parseInt(match[1], 10);
+    }
+    return data;
   }
 
   async refreshToken(refreshToken: string): Promise<Pick<TokenResponse, 'access_token' | 'expires_in'>> {

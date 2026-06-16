@@ -9,9 +9,8 @@ export class ShopsResource {
   }
 
   async getUserShops(userId: number): Promise<Shop[]> {
-    const res = await this.client.get<ListResponse<Shop>>(
-      `/application/users/${userId}/shops`
-    );
-    return res.results;
+    // Etsy returns a single Shop object for this endpoint, not a list
+    const shop = await this.client.get<Shop>(`/application/users/${userId}/shops`);
+    return [shop];
   }
 }

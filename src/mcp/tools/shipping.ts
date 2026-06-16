@@ -76,13 +76,13 @@ export function registerShippingTools(
       shop_id: z.number().optional(),
       title: z.string().describe('Profile name, e.g. "DS Lite - EU/UK/US"'),
       origin_country_iso: z.string().default('PL').describe('2-letter ISO country code of origin'),
-      origin_postal_code: z.string().optional(),
+      origin_postal_code: z.string().describe('Required by Etsy. e.g. "04393"'),
       primary_cost: z.number().default(0).describe('Base shipping cost for one item'),
       secondary_cost: z.number().default(0).describe('Cost for each additional item'),
       destination_country_iso: z.string().optional().describe('e.g. "US". Use destination_region for groups.'),
       destination_region: z.enum(['eu', 'non_eu', 'none']).optional(),
-      min_delivery_days: z.number().optional(),
-      max_delivery_days: z.number().optional(),
+      min_delivery_days: z.number().default(3).describe('Required by Etsy. Minimum delivery days.'),
+      max_delivery_days: z.number().default(7).describe('Required by Etsy. Maximum delivery days.'),
     },
     async ({ shop_id, ...params }) => {
       try {
@@ -210,8 +210,8 @@ export function registerShippingTools(
       type: z.enum(['0', '1']).default('0').describe('"0" = shipping upgrade, "1" = handling upgrade'),
       price: z.number().describe('Upgrade cost for one item'),
       secondary_price: z.number().default(0),
-      min_delivery_days: z.number().optional(),
-      max_delivery_days: z.number().optional(),
+      min_delivery_days: z.number().default(2).describe('Required by Etsy.'),
+      max_delivery_days: z.number().default(5).describe('Required by Etsy.'),
       mail_class: z.string().optional(),
     },
     async ({ shop_id, shipping_profile_id, ...params }) => {

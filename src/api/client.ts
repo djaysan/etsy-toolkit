@@ -14,17 +14,21 @@ export class EtsyApiClient {
     private apiKey: string,
     private storage: TokenStorage,
     private refreshFn?: RefreshFn,
+    private sharedSecret?: string,
   ) {
     // Create the axios instance pointing at the Etsy v3 base URL
     this.http = axios.create({ baseURL: BASE_URL });
 
     // Request interceptor: attach Bearer token + API key to every outgoing request
+    // Etsy requires x-api-key to be "keystring:shared_secret" for authenticated endpoints
     this.http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       const tokens = this.storage.getTokens();
       if (tokens?.access_token) {
         config.headers['Authorization'] = `Bearer ${tokens.access_token}`;
       }
-      config.headers['x-api-key'] = this.apiKey;
+      config.headers['x-api-key'] = this.sharedSecret
+        ? `${this.apiKey}:${this.sharedSecret}`
+        : this.apiKey;
       return config;
     });
 
